@@ -1,0 +1,25 @@
+[project]
+name = "ao3-parser-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Takumi_Nothing", email = "nameno6112@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "bs4>=0.0.2",
+    "lxml>=6.0.4",
+    "playwright>=1.59.0",
+    "playwright-stealth>=2.0.3",
+    "requests>=2.33.1",
+]
+
+[project.scripts]
+ao3-parser-api = "ao3_parser_api:main"
+start-parser = "ao3_parser_api.__main__:main"
+
+[build-system]
+requires = ["uv_build>=0.11.3,<0.12.0"]
+build-backend = "uv_build"
