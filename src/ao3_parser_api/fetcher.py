@@ -1,11 +1,8 @@
-#from pathlib import Path
-#import time
 import asyncio
 from playwright.async_api import async_playwright
 #from playwright_stealth import Stealth
 from .config import MAIN_URL, USER_AGENT, EXTRA_HEADERS, MAX_STREAMS
 from .parser import AO3parser
-#from bs4 import BeautifulSoup
 
 class AO3fetcher:
     def __init__(self):

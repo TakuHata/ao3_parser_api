@@ -1,14 +1,15 @@
 from typing import Union, Any, overload, Literal
 from bs4 import BeautifulSoup
+from .datatype import FicData
 
 class AO3parser:
     @overload
     def get_works(self, html_page: str, output_format: Literal[1]) -> list[tuple[str, ...]]: ...
 
     @overload
-    def get_works(self, html_page: str, output_format: Literal[2]) -> list[dict[str, Any]]: ...
+    def get_works(self, html_page: str, output_format: Literal[2]) -> list[FicData]: ...
 
-    def get_works(self, html_page: str, output_format: int = 1) -> Union[list[tuple[str, ...]], list[dict[str, Any]]]:
+    def get_works(self, html_page: str, output_format: int = 1) -> Union[list[tuple[str, ...]], list[FicData]]:
         soup = BeautifulSoup(html_page, "lxml")
 
         works = soup.select("li.blurb")
@@ -64,7 +65,9 @@ class AO3parser:
 
             url_text = str(title_el.get('href')) if title_el else "-"
 
-            work_data = {
+            current, total =  self._parse_chapters(chapters_text)
+
+            work_data: FicData = {
                 "title": title_text,
                 "author": author_text,
                 "fandom": fandom_text,
@@ -72,11 +75,12 @@ class AO3parser:
                 "tags": tags_text,
                 "summary": summary_text,
                 "language": language_text,
-                "words": words_text,
-                "chapters": chapters_text,
-                "comments": comments_text,
-                "kudos": kudos_text,
-                "hits": hits_text,
+                "words": self._clean_int(words_text),
+                "chapters_current": current,
+                "chapters_total": total,
+                "comments": self._clean_int(comments_text),
+                "kudos": self._clean_int(kudos_text),
+                "hits": self._clean_int(hits_text),
                 "url": url_text
             }
             data_for_db.append(work_data)
@@ -87,5 +91,20 @@ class AO3parser:
             return data_for_db
         
         return []
+    
+    def _clean_int(self, text: str) -> int:
+        if not text or text == "-":
+            return 0
+        clean_val = text.replace(",","").strip()
+        return int(clean_val) if clean_val.isdigit() else 0
+    
+    def _parse_chapters(self, chapters_text: str) -> tuple[int, int | None]:
+        parts = chapters_text.split("/")
+        current = self._clean_int(parts[0])
+
+        total_raw = parts[1] if len(parts) > 1 else ""
+        total = self._clean_int(total_raw) if total_raw != "?" else None
+
+        return current, total
 
 
