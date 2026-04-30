@@ -9,3 +9,7 @@ EXTRA_HEADERS = {
 }
 
 MAX_STREAMS = 5
+
+CHUNK_SIZE = 50
+
+URLS = [f"{BASE_URL}{i}" for i in range(1, PAGES)]

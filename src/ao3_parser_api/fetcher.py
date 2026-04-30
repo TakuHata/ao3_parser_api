@@ -31,8 +31,9 @@ class AO3fetcher:
         print("Контекст готов.")
 
     async def close(self):
-        if self.browser != None and self.playwright != None:
+        if self.browser:
             await self.browser.close()
+        if self.playwright:
             await self.playwright.stop()
     
 
@@ -44,22 +45,10 @@ class AO3fetcher:
                 await page.route("**/*.{png,jpg,jpeg,css}", lambda route: route.abort())
 
                 try:
-                    await page.goto(url, wait_until="domcontentloaded")
+                    await asyncio.wait_for(page.goto(url, wait_until="domcontentloaded"), timeout=60.0)
                     page_html = await page.content()
                     return page_html
+                except Exception:
+                    return None
                 finally:
                     await page.close()
-
-    #def get_text(self, html_doc: str):
-    #    soup = BeautifulSoup(html_doc, 'lxml')
-
-    '''def save_file(self, filename: str, content: str):
-        base_dir = Path(__file__).resolve().parent.parent.parent
-        data_dir = base_dir / "data"
-        data_dir.mkdir(exist_ok=True)
-        file_path = data_dir / filename
-        
-        with open(f"{file_path}.html", "w") as file:
-            file.write(content)
-
-        print(f"Файл сохранен в: {file_path}")'''

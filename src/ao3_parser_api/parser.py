@@ -92,6 +92,15 @@ class AO3parser:
         
         return []
     
+    def convert_to_tuple(self, data: list[FicData]) -> list[tuple[Any, ...]]:
+        keys = (
+            'title', 'author', 'fandom', 'datetime', 'tags', 'summary', 
+            'language', 'words', 'chapters_current', 'chapters_total', 
+            'comments', 'kudos', 'hits', 'url'
+        )
+        return [tuple(d[key] for key in keys) for d in data]
+
+    
     def _clean_int(self, text: str) -> int:
         if not text or text == "-":
             return 0
