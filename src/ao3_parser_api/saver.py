@@ -5,7 +5,10 @@ from .datatype import FicData
 
 class AO3saver:
     current_file = Path(__file__).resolve()
-    data_dir = current_file.parents[2] / "data"
+    data_dir = current_file.parents[2]
+
+    def __init__(self):
+        self.data_dir.mkdir(parents=True, exist_ok=True)
 
     def save_sql_db(self, data: list[tuple[str, ...]]):
         with sqlite3.connect(f"{self.data_dir}/data/fics_db.db") as connection:

@@ -39,16 +39,20 @@ class AO3fetcher:
 
     async def scrape_page_html(self, url: str):
         async with self.sem:
-            if self.context != None:
-                page = await self.context.new_page()
+            if self.context is None:
+                print("Контекст не создан! Вызовите start()")
+                return None
+            
+            page = await self.context.new_page()
 
-                await page.route("**/*.{png,jpg,jpeg,css}", lambda route: route.abort())
+            await page.route("**/*.{png,jpg,jpeg,css}", lambda route: route.abort())
 
-                try:
-                    await asyncio.wait_for(page.goto(url, wait_until="domcontentloaded"), timeout=60.0)
-                    page_html = await page.content()
-                    return page_html
-                except Exception:
-                    return None
-                finally:
-                    await page.close()
+            try:
+                await asyncio.wait_for(page.goto(url, wait_until="domcontentloaded"), timeout=60.0)
+                page_html = await page.content()
+                return page_html
+            except Exception as e:
+                print(f"Ошибка загрузки {url}: {type(e).__name__} - {e}")
+                return None
+            finally:
+                await page.close()
